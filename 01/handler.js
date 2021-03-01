@@ -1,11 +1,11 @@
 require('dotenv').config();
 const AWS = require('aws-sdk');
 const axios = require('axios');
-const { DbCache } = require('cache');
+const { DbCache } = require('./cache');
 
 AWS.config.update({
   apiVersion: process.env.AWS_API_VERSION,
-  region: process.env.AWS_REGION,
+  region: `${process.env.AWS_REGION}`,
   secretAccessKey: process.env.AWS_SECRET_KEY,
   accessKeyId: process.env.AWS_ACCESS_KEY,
 });
@@ -14,9 +14,10 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
 const dbCache = new DbCache(documentClient);
 const token = process.env.ARC_TOKEN;
 
-function generateArcId(stringId) {
+const generateArcId = async (stringId) => {
   const cacheKey = `generate_arc_id_`;
-  const cachedId = dbCache.get(cacheKey);
+  // const cachedId = dbCache.get(cacheKey);
+  const cachedId = await dbCache.get(cacheKey);
   if (cachedId && cachedId.length > 0) {
     return cachedId;
   }
@@ -37,4 +38,4 @@ function generateArcId(stringId) {
   });
 }
 
-console.log(generateArcId("test_some_string"));
+generateArcId('some_string_to_id');

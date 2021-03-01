@@ -24,11 +24,6 @@
     "serverless-functions-base-path": "^1.0.32",
     "xo": "^0.37.1"
   },
-  "husky": {
-    "hooks": {
-      "pre-push": "npm run lint && npm run test"
-    }
-  },
   "jest": {
     "collectCoverageFrom": [
       "./src/**/*.js"

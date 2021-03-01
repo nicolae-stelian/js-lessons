@@ -26,7 +26,7 @@ class DbCache {
           return JSON.parse(result.Item.value.toString());
         }
         return {};
-      });
+      }).catch(e);
   }
 }
 
