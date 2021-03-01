@@ -1,14 +1,18 @@
 require('dotenv').config();
+// /usr/bin/node /home/stelu/learning-workspace/js-lessons/01/handler.js
+
 const AWS = require('aws-sdk');
 const axios = require('axios');
 const { DbCache } = require('./cache');
 
-AWS.config.update({
+let config = {
   apiVersion: process.env.AWS_API_VERSION,
   region: `${process.env.AWS_REGION}`,
   secretAccessKey: process.env.AWS_SECRET_KEY,
   accessKeyId: process.env.AWS_ACCESS_KEY,
-});
+};
+// console.log(config);
+AWS.config.update(config);
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 const dbCache = new DbCache(documentClient);
@@ -38,4 +42,15 @@ const generateArcId = async (stringId) => {
   });
 }
 
-generateArcId('some_string_to_id');
+generateArcId('some_string_to_id').then(r => {
+  console.log(r);
+});
+
+
+// dbCache.set('some_key', 'some_value');
+
+// const v =  dbCache.get('some_key');
+// Promise.all([v]).then((values) => {
+//   console.log(values);
+// });
+

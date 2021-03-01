@@ -18,7 +18,7 @@ class DbCache {
   get(key) {
     const parameters = {
       TableName: this.tableName,
-      Key: { key },
+      Key: { id: key },
     };
     return this.docClient.get(parameters).promise()
       .then((result) => {
@@ -26,7 +26,7 @@ class DbCache {
           return JSON.parse(result.Item.value.toString());
         }
         return {};
-      }).catch(e);
+      });
   }
 }
 
