@@ -19,7 +19,7 @@ const dbCache = new DbCache(documentClient);
 const token = process.env.ARC_TOKEN;
 
 const generateArcId = async (stringId) => {
-  const cacheKey = `generate_arc_id_`;
+  const cacheKey = `generate_arc_id_${stringId}`;
   // const cachedId = dbCache.get(cacheKey);
   const cachedId = await dbCache.get(cacheKey);
   if (cachedId && cachedId.length > 0) {
@@ -33,18 +33,18 @@ const generateArcId = async (stringId) => {
     },
   };
 
-  return axios.get(url, options).then((resp) => {
-    if (!resp.data.id) {
-      return false;
-    }
-    dbCache.set(cacheKey, resp.data.id);
-    return resp.data.id;
-  });
-}
+  let resp = await axios.get(url, options);
+  if (!resp.data.id) {
+    return false;
+  }
+  await dbCache.set(cacheKey, resp.data.id);
+  return resp.data.id;
+};
 
-generateArcId('some_string_to_id').then(r => {
-  console.log(r);
-});
+(async() => {
+    let r = await generateArcId('some_string_to_id2');
+    console.log(r);
+})();
 
 
 // dbCache.set('some_key', 'some_value');
