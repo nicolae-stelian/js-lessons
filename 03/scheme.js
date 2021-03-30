@@ -255,10 +255,10 @@ function eval_lisp(body, env) {
                   if (then === NIL) throw new Error(`Missing then`);
                   let els = exp.cdr.cdr.cdr.car;
                   if (els === NIL) els = false;
-                  if (eval_expression(cond, env)) {
-                      return eval_expression(then, env);
-                  } else {
+                  if (eval_expression(cond, env) === false) {
                       return eval_expression(els, env);
+                  } else {
+                      return eval_expression(then, env);
                   }
               }
 
