@@ -229,38 +229,48 @@ function eval_lisp(body, env) {
         if (exp.car instanceof Symbol) {
             let sym = exp.car;
             switch (sym.name) {
-              case "define":             // (define a (+ 2 3 (* 5 6)))
-                let name = exp.cdr.car;  // name
-                let value = exp.cdr.cdr.car; // value
-                env.def(name, eval_expression(value, env));
-                return value;
+              case "define": {
+                  let name = exp.cdr.car;  // name
+                  let value = exp.cdr.cdr.car; // value
+                  env.def(name, eval_expression(value, env));
+                  return value;
+              }
 
-              case "if":
-                let cond = exp.cdr.car;
-                let then = exp.cdr.cdr.car;
-                if (then === NIL) throw new Error(`Missing then`);
-                let els = exp.cdr.cdr.cdr.car;
-                if (els === NIL) els = false;
-                if (eval_expression(cond, env)) {
-                    return eval_expression(then, env);
-                } else {
-                    return eval_expression(els, env);
-                }
+              case "set!": {
+                  let name = exp.cdr.car;  // name
+                  let value = exp.cdr.cdr.car; // value
+                  env.set(name, eval_expression(value, env));
+                  return value;
+              }
 
-              case "lambda":
-                let varnames = exp.cdr.car;
-                let body = exp.cdr.cdr;
-                varnames.forEach(sym => {
-                    if (!(sym instanceof Symbol))
-                        throw new Error("Expecting symbol in lambda list");
-                });
-                return function(...args) {
-                    let innerEnv = new Environment(env);
-                    varnames.forEach((sym, index) =>
-                        innerEnv.def(sym.name, index < args.length ? args[index] : false)
-                    );
-                    return eval_prog(body, innerEnv);
-                };
+              case "if": {
+                  let cond = exp.cdr.car;
+                  let then = exp.cdr.cdr.car;
+                  if (then === NIL) throw new Error(`Missing then`);
+                  let els = exp.cdr.cdr.cdr.car;
+                  if (els === NIL) els = false;
+                  if (eval_expression(cond, env)) {
+                      return eval_expression(then, env);
+                  } else {
+                      return eval_expression(els, env);
+                  }
+              }
+
+              case "lambda": {
+                  let varnames = exp.cdr.car;
+                  let body = exp.cdr.cdr;
+                  varnames.forEach(sym => {
+                      if (!(sym instanceof Symbol))
+                          throw new Error("Expecting symbol in lambda list");
+                  });
+                  return function(...args) {
+                      let innerEnv = new Environment(env);
+                      varnames.forEach((sym, index) =>
+                          innerEnv.def(sym.name, index < args.length ? args[index] : false)
+                      );
+                      return eval_prog(body, innerEnv);
+                  };
+              }
             }
 
             // (print a b)
@@ -311,6 +321,8 @@ class Environment {
 let code = `
 (define a (+ (* 2 3) 3))
 (define b 6)
+(print (+ a b))
+(set! b 7)
 (print (+ a b))
 
 (define fib
