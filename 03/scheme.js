@@ -207,10 +207,7 @@ function eval_lisp(body, env) {
 
     function eval_prog(body, env) {
         let value = false;
-        while (body !== NIL) {
-            value = eval_expression(body.car, env);
-            body = body.cdr;
-        }
+        body.forEach(exp => value = eval_expression(exp, env));
         return value;
     }
 
@@ -243,6 +240,10 @@ function eval_lisp(body, env) {
                       throw new Error("Expecting symbol in `set!`");
                   env.set(sym.name, eval_expression(value, env));
                   return value;
+              }
+
+              case "begin": {
+                  return eval_prog(exp.cdr);
               }
 
               case "if": {
@@ -326,6 +327,9 @@ let code = `
 (print (+ a b))
 (set! b 7)
 (print (+ a b))
+
+(define c (begin 1 2 3))
+(print c)
 
 (define fib
   (lambda (n)
