@@ -230,16 +230,18 @@ function eval_lisp(body, env) {
             let sym = exp.car;
             switch (sym.name) {
               case "define": {
-                  let name = exp.cdr.car;  // name
+                  let sym = exp.cdr.car;  // name
                   let value = exp.cdr.cdr.car; // value
-                  env.def(name, eval_expression(value, env));
+                  env.def(sym.name, eval_expression(value, env));
                   return value;
               }
 
               case "set!": {
-                  let name = exp.cdr.car;  // name
+                  let sym = exp.cdr.car;  // name
                   let value = exp.cdr.cdr.car; // value
-                  env.set(name, eval_expression(value, env));
+                  if (!(sym instanceof Symbol))
+                      throw new Error("Expecting symbol in `set!`");
+                  env.set(sym.name, eval_expression(value, env));
                   return value;
               }
 
