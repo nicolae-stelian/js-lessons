@@ -278,12 +278,11 @@ function eval_lisp(body, env) {
                   };
               }
             }
-
-            // (print a b)
-            let func = env.get(sym.name);
-            let args = exp.cdr.mapArray(exp => eval_expression(exp, env));
-            return func.apply(null, args);
         }
+
+        let func = eval_expression(exp.car, env);
+        let args = exp.cdr.mapArray(exp => eval_expression(exp, env));
+        return func.apply(null, args);
     }
 }
 
