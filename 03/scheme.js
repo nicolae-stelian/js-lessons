@@ -156,10 +156,13 @@ class Cons {
             node = node.cdr;
         }
     }
+    mapArray(f) {
+        let ret = [];
+        this.forEach(el => ret.push(f(el)));
+        return ret;
+    }
     toArray() {
-        let array = [];
-        this.forEach(el => array.push(el));
-        return array;
+        return this.mapArray(el => el);
     }
 }
 
@@ -278,12 +281,7 @@ function eval_lisp(body, env) {
 
             // (print a b)
             let func = env.get(sym.name);
-            let args = [];
-            let node = exp.cdr;
-            while (node !== NIL) {
-                args.push(eval_expression(node.car, env));
-                node = node.cdr;
-            }
+            let args = exp.cdr.mapArray(exp => eval_expression(exp, env));
             return func.apply(null, args);
         }
     }
